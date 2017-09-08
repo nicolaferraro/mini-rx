@@ -13,17 +13,19 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package org.mini.rx.userapp;
+package org.mini.rx;
 
-import java.util.function.Consumer;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author nicola
- * @since 07/09/2017
+ * @since 08/09/2017
  */
-@FunctionalInterface
-public interface Action<T> {
+public interface Tasks {
 
-    void execute(Consumer<T> callback);
+    <T> TaskCollector<T> join(Task<T>... tasks);
+
+    <T> T getResultBlocking(Task<T> task, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
 }

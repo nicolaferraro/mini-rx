@@ -23,4 +23,6 @@ public interface RxContext {
 
     SchedulerManager getSchedulerManager();
 
+    Tasks tasks();
+
 }

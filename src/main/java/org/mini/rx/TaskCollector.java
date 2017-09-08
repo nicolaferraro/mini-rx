@@ -15,27 +15,23 @@
  */
 package org.mini.rx;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
  * @author nicola
  * @since 08/09/2017
  */
-public class DefaultRxContext implements RxContext {
+public interface TaskCollector<T> {
 
-    /**
-     * Per-context scheduler manager
-     */
-    private SchedulerManager schedulerManager = new DefaultSchedulerManager();
+    <R> Task<R> then(Function<List<T>, R> reduce);
 
-    private Tasks tasks = new DefaultTasks(this);
-
-    @Override
-    public SchedulerManager getSchedulerManager() {
-        return schedulerManager;
-    }
-
-    @Override
-    public Tasks tasks() {
-        return tasks;
+    default void execute(Consumer<List<T>> run) {
+        then(lst -> {
+            run.accept(lst);
+            return (Void) null;
+        });
     }
 
 }

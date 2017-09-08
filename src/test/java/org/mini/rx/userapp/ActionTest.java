@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import org.mini.rx.Task;
 import org.mini.rx.DefaultRxContext;
 import org.mini.rx.RxContext;
 import org.mini.rx.SchedulerManager;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ActionTest {
 
-    class Dest implements Action<Integer> {
+    class Dest implements Task<Integer> {
 
         private SchedulerManager schedulers;
 
@@ -45,7 +46,7 @@ public class ActionTest {
         }
 
         @Override
-        public void execute(Consumer<Integer> callback) {
+        public void accept(Consumer<Integer> callback) {
             schedulers.serialized(this).schedule(() -> {
                 callback.accept(counter++);
             });
@@ -66,7 +67,7 @@ public class ActionTest {
         CountDownLatch latch = new CountDownLatch(limit);
         for (int i=0; i<limit; i++) {
             schedulers.computation().schedule(() -> {
-                dest.execute(x -> schedulers.serialized(ActionTest.this).schedule(() -> {
+                dest.accept(x -> schedulers.serialized(ActionTest.this).schedule(() -> {
                     lst.add(x);
                     latch.countDown();
                 }));
