@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package org.mini.rx;
+package org.mini.rx.userapp;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import org.mini.rx.DefaultRxContext;
+import org.mini.rx.RxContext;
+import org.mini.rx.SchedulerManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,17 +36,17 @@ public class ActionTest {
 
     class Dest implements Action<Integer> {
 
-        private Scheduler scheduler;
+        private SchedulerManager schedulers;
 
         private int counter;
 
-        public Dest(Scheduler scheduler) {
-            this.scheduler = scheduler;
+        public Dest(SchedulerManager schedulers) {
+            this.schedulers = schedulers;
         }
 
         @Override
         public void execute(Consumer<Integer> callback) {
-            scheduler.serialized(this).schedule(() -> {
+            schedulers.serialized(this).schedule(() -> {
                 callback.accept(counter++);
             });
         }
@@ -52,9 +55,9 @@ public class ActionTest {
     @Test
     public void test() throws InterruptedException {
 
-        Scheduler scheduler = new DefaultSchedulerManager().computation();
-        Scheduler serialScheduler = scheduler.serialized(this);
-        Dest dest = new Dest(scheduler);
+        RxContext ctx = new DefaultRxContext();
+        SchedulerManager schedulers = ctx.getSchedulerManager();
+        Dest dest = new Dest(schedulers);
 
         List<Integer> lst = new LinkedList<>();
 
@@ -62,8 +65,8 @@ public class ActionTest {
         int limit = 500;
         CountDownLatch latch = new CountDownLatch(limit);
         for (int i=0; i<limit; i++) {
-            scheduler.schedule(() -> {
-                dest.execute(x -> serialScheduler.schedule(() -> {
+            schedulers.computation().schedule(() -> {
+                dest.execute(x -> schedulers.serialized(ActionTest.this).schedule(() -> {
                     lst.add(x);
                     latch.countDown();
                 }));

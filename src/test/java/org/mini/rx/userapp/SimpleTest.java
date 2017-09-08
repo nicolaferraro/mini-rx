@@ -13,7 +13,7 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package org.mini.rx;
+package org.mini.rx.userapp;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,6 +24,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.junit.Test;
+import org.mini.rx.DefaultRxContext;
+import org.mini.rx.RxContext;
+import org.mini.rx.SchedulerManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,8 +39,8 @@ public class SimpleTest {
 
     @Test
     public void testParallel() throws Exception {
-
-        SchedulerManager schedulers = new DefaultSchedulerManager();
+        RxContext ctx = new DefaultRxContext();
+        SchedulerManager schedulers = ctx.getSchedulerManager();
         Queue<Integer> nums = new ConcurrentLinkedQueue<>();
 
         int limit = 200;
@@ -57,8 +60,8 @@ public class SimpleTest {
 
     @Test
     public void testAsyncCall() throws Exception {
-
-        SchedulerManager schedulers = new DefaultSchedulerManager();
+        RxContext ctx = new DefaultRxContext();
+        SchedulerManager schedulers = ctx.getSchedulerManager();
         Function<Integer, Integer> square = x -> x*x;
 
         Queue<Integer> nums = new LinkedList<>();
@@ -70,7 +73,7 @@ public class SimpleTest {
             schedulers.computation().schedule(() -> {
                 int y = square.apply(n);
 
-                schedulers.computation().serialized(SimpleTest.this).schedule(() -> {
+                schedulers.serialized(SimpleTest.this).schedule(() -> {
                     nums.add(y);
                     for (int x : nums) {
                         x += 1; // make something in parallel

@@ -27,11 +27,11 @@ public class SerializedScheduler implements Scheduler {
 
     private Scheduler delegate;
 
-    private Object target;
+    private Object sync;
 
-    public SerializedScheduler(Scheduler delegate, Object target) {
+    public SerializedScheduler(Scheduler delegate, Object sync) {
         this.delegate = delegate;
-        this.target = target;
+        this.sync = sync;
     }
 
     @Override
@@ -54,13 +54,8 @@ public class SerializedScheduler implements Scheduler {
         delegate.scheduleWithFixedDelay(toSerial(runnable), initialDelay, period, unit);
     }
 
-    @Override
-    public Scheduler serialized(Object target) {
-        return new SerializedScheduler(delegate, target);
-    }
-
     private SerialRunnable toSerial(Runnable runnable) {
-        return SerialRunnable.serialize(this.target, runnable);
+        return SerialRunnable.serialize(this.sync, runnable);
     }
 
 }

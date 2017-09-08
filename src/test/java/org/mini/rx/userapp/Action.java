@@ -13,22 +13,17 @@
  * implied.  See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package org.mini.rx;
+package org.mini.rx.userapp;
 
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * @author nicola
  * @since 07/09/2017
  */
-public interface Scheduler {
+@FunctionalInterface
+public interface Action<T> {
 
-    void schedule(Runnable runnable);
-
-    void schedule(Runnable runnable, long delay, TimeUnit unit);
-
-    void scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit);
-
-    void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long period, TimeUnit unit);
+    void execute(Consumer<T> callback);
 
 }

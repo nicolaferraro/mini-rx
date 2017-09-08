@@ -15,20 +15,12 @@
  */
 package org.mini.rx;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author nicola
- * @since 07/09/2017
+ * @since 08/09/2017
  */
-public interface Scheduler {
+public interface RxContext {
 
-    void schedule(Runnable runnable);
-
-    void schedule(Runnable runnable, long delay, TimeUnit unit);
-
-    void scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit);
-
-    void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long period, TimeUnit unit);
+    SchedulerManager getSchedulerManager();
 
 }

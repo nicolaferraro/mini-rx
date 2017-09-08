@@ -15,15 +15,20 @@
  */
 package org.mini.rx;
 
-import java.util.function.Consumer;
-
 /**
  * @author nicola
- * @since 07/09/2017
+ * @since 08/09/2017
  */
-@FunctionalInterface
-public interface Action<T> {
+public class DefaultRxContext implements RxContext {
 
-    void execute(Consumer<T> callback);
+    /**
+     * Per-context scheduler manager
+     */
+    private SchedulerManager schedulerManager = new DefaultSchedulerManager();
+
+    @Override
+    public SchedulerManager getSchedulerManager() {
+        return schedulerManager;
+    }
 
 }

@@ -17,6 +17,7 @@ package org.mini.rx.computation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,9 @@ import org.mini.rx.Scheduler;
 public class ComputationScheduler implements Scheduler {
 
     private List<ScheduledExecutorService> executorServices;
+
+    // TODO better looking for affinity
+    private Random rnd = new Random();
 
     public ComputationScheduler() {
         int cores = Runtime.getRuntime().availableProcessors();
@@ -60,21 +64,12 @@ public class ComputationScheduler implements Scheduler {
         getExecutorFor(runnable).scheduleWithFixedDelay(runnable, initialDelay, period, unit);
     }
 
-    @Override
-    public Scheduler serialized(Object target) {
-        return new SerializedScheduler(this, target);
-    }
-
     private ScheduledExecutorService getExecutorFor(Object target) {
         int offset;
         if (target instanceof SerialRunnable) {
             offset = ((SerialRunnable) target).channelId() % executorServices.size();
         } else {
-            int hash = target.hashCode();
-            if (hash == Integer.MIN_VALUE) {
-                hash = 0;
-            }
-            offset = Math.abs(hash) % executorServices.size();
+            offset = rnd.nextInt(executorServices.size());
         }
         return this.executorServices.get(offset);
     }

@@ -23,4 +23,6 @@ public interface SchedulerManager {
 
     Scheduler computation();
 
+    Scheduler serialized(Object sync);
+
 }

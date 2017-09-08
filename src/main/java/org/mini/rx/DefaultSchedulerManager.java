@@ -15,18 +15,31 @@
  */
 package org.mini.rx;
 
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.mini.rx.computation.SerializedScheduler;
 import org.mini.rx.computation.ComputationScheduler;
 
 /**
  * @author nicola
  * @since 07/09/2017
  */
-public class DefaultSchedulerManager implements SchedulerManager {
+class DefaultSchedulerManager implements SchedulerManager {
 
     private ComputationScheduler computationScheduler = new ComputationScheduler();
+
+    private ConcurrentHashMap<Object, Scheduler> serializedSchedulers = new ConcurrentHashMap<>();
 
     @Override
     public Scheduler computation() {
         return computationScheduler;
     }
+
+    public Scheduler serialized(Object sync) {
+        Objects.requireNonNull(sync, "Cannot serialize on a null object");
+        serializedSchedulers.computeIfAbsent(sync, s -> new SerializedScheduler(computationScheduler, s));
+        return serializedSchedulers.get(sync);
+    }
+
 }
