@@ -15,6 +15,8 @@
  */
 package org.mini.rx;
 
+import java.io.IOException;
+
 /**
  * @author nicola
  * @since 08/09/2017
@@ -26,16 +28,23 @@ public class DefaultRxContext implements RxContext {
      */
     private SchedulerManager schedulerManager = new DefaultSchedulerManager();
 
-    private Tasks tasks = new DefaultTasks(this);
-
     @Override
     public SchedulerManager getSchedulerManager() {
         return schedulerManager;
     }
 
     @Override
-    public Tasks tasks() {
-        return tasks;
+    public AsyncTask newAsyncTask() {
+        return new DefaultAsyncTask(this, null);
     }
 
+    @Override
+    public AsyncTask newAsyncTask(String name) {
+        return new DefaultAsyncTask(this, name);
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.schedulerManager.close();
+    }
 }

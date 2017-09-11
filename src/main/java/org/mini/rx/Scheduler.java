@@ -15,13 +15,14 @@
  */
 package org.mini.rx;
 
+import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author nicola
  * @since 07/09/2017
  */
-public interface Scheduler {
+public interface Scheduler extends Closeable {
 
     void schedule(Runnable runnable);
 

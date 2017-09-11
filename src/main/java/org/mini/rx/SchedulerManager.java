@@ -15,11 +15,13 @@
  */
 package org.mini.rx;
 
+import java.io.Closeable;
+
 /**
  * @author nicola
  * @since 07/09/2017
  */
-public interface SchedulerManager {
+public interface SchedulerManager extends Closeable {
 
     Scheduler computation();
 

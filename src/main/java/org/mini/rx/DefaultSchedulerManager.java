@@ -15,6 +15,7 @@
  */
 package org.mini.rx;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,10 +37,20 @@ class DefaultSchedulerManager implements SchedulerManager {
         return computationScheduler;
     }
 
+    @Override
+    public void close() throws IOException {
+        computationScheduler.close();
+        for (Scheduler scheduler : serializedSchedulers.values()) {
+            scheduler.close();
+        }
+    }
+
     public Scheduler serialized(Object sync) {
         Objects.requireNonNull(sync, "Cannot serialize on a null object");
         serializedSchedulers.computeIfAbsent(sync, s -> new SerializedScheduler(computationScheduler, s));
         return serializedSchedulers.get(sync);
     }
+
+
 
 }

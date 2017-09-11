@@ -15,6 +15,7 @@
  */
 package org.mini.rx.computation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -62,6 +63,23 @@ public class ComputationScheduler implements Scheduler {
     @Override
     public void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
         getExecutorFor(runnable).scheduleWithFixedDelay(runnable, initialDelay, period, unit);
+    }
+
+    @Override
+    public void close() throws IOException {
+        for (ScheduledExecutorService executorService : executorServices) {
+            try {
+                if (!executorService.isShutdown()) {
+                    executorService.shutdown();
+                    executorService.awaitTermination(10, TimeUnit.SECONDS);
+                    executorService.shutdownNow();
+                    executorService.awaitTermination(10, TimeUnit.SECONDS);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Cannot shutdown threads correctly");
+            }
+        }
     }
 
     private ScheduledExecutorService getExecutorFor(Object target) {

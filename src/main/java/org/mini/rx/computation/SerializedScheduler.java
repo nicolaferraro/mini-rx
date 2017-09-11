@@ -15,6 +15,7 @@
  */
 package org.mini.rx.computation;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.mini.rx.Scheduler;
@@ -52,6 +53,11 @@ public class SerializedScheduler implements Scheduler {
     @Override
     public void scheduleWithFixedDelay(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
         delegate.scheduleWithFixedDelay(toSerial(runnable), initialDelay, period, unit);
+    }
+
+    @Override
+    public void close() throws IOException {
+        delegate.close();
     }
 
     private SerialRunnable toSerial(Runnable runnable) {

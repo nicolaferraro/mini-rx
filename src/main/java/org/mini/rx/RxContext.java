@@ -15,14 +15,18 @@
  */
 package org.mini.rx;
 
+import java.io.Closeable;
+
 /**
  * @author nicola
  * @since 08/09/2017
  */
-public interface RxContext {
+public interface RxContext extends Closeable {
 
     SchedulerManager getSchedulerManager();
 
-    Tasks tasks();
+    AsyncTask newAsyncTask();
+
+    AsyncTask newAsyncTask(String name);
 
 }
